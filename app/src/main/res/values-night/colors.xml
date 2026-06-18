@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Mode Palette -->
+    <color name="pastel_blue_primary">#457B9D</color>
+    <color name="pastel_blue_dark">#A8DADC</color>
+    <color name="pastel_blue_light">#1D3557</color> <!-- Dark navy as background -->
+
+    <color name="ios_blue">#A8DADC</color>
+    <color name="ios_light_blue">#457B9D</color>
+    <color name="ios_system_background">#1D3557</color>
+    <color name="ios_card_background">#2C3E50</color>
+
+    <!-- Light text for dark background -->
+    <color name="ios_text_primary">#F1FAEE</color>
+    <color name="ios_text_secondary">#A8DADC</color>
+    <color name="ios_text_label">#E2EFEF</color>
+
+    <color name="ios_separator">#457B9D</color>
+    <color name="ios_search_bg">#2C3E50</color>
+
+    <!-- In Dark Mode, 'white' refers to a light grey to keep cards dark but visible -->
+    <color name="white">#2C3E50</color>
+    <color name="black">#FFFFFF</color>
+</resources>

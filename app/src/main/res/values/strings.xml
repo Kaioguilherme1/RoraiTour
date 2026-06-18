@@ -1,0 +1,61 @@
+<resources>
+    <string name="app_name">RoraiTour</string>
+    <string name="login">Entrar</string>
+    <string name="register">Cadastrar</string>
+    <string name="name">Nome</string>
+    <string name="email">Email</string>
+    <string name="password">Senha</string>
+    <string name="confirm_password">Confirmar senha</string>
+    <string name="already_have_account">Ja tenho conta</string>
+    <string name="create_account">Criar conta</string>
+    <string name="search_place">Pesquisar local por nome</string>
+    <string name="distance_km">Distancia: %.2f km</string>
+    <string name="coordinates_value">Coordenadas: %.5f, %.5f</string>
+    <string name="history_unavailable">Informacoes historicas indisponiveis.</string>
+    <string name="favorite">Favoritar</string>
+    <string name="share">Compartilhar</string>
+    <string name="open_route">Abrir rota</string>
+    <string name="edit">Editar</string>
+    <string name="delete">Excluir</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Salvar</string>
+    <string name="description">Descricao</string>
+    <string name="category">Categoria</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="history">Historia</string>
+    <string name="image_url">URL da imagem</string>
+    <string name="add_place">Adicionar local</string>
+    <string name="share_place">Compartilhar local</string>
+    <string name="place_image">Imagem do local</string>
+    <string name="added_to_favorites">Adicionado aos favoritos.</string>
+    <string name="removed_from_favorites">Removido dos favoritos.</string>
+    <string name="confirm_delete_title">Confirmar exclusao</string>
+    <string name="confirm_delete_message">Deseja realmente excluir este local?</string>
+    <string name="place_deleted">Local excluido.</string>
+    <string name="my_location">Minha localizacao</string>
+    <string name="location_permission_required">Permissao de localizacao necessaria.</string>
+    <string name="location_unavailable">Nao foi possivel obter a localizacao.</string>
+    <string name="offline_using_cache">Sem internet. Exibindo dados locais/cache.</string>
+    <string name="nav_open">Abrir menu</string>
+    <string name="nav_close">Fechar menu</string>
+    <string name="nav_home">Inicio</string>
+    <string name="nav_favorites">Favoritos</string>
+    <string name="nav_my_places">Meus Locais</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="nav_logout">Logout</string>
+    <string name="nav_subtitle">Turismo perto de voce</string>
+    <string name="profile_not_available">Perfil indisponivel</string>
+    <string name="sign_in_with_google">Entrar com Google</string>
+    <string name="nearby_places">Locais próximos</string>
+    <string name="menu_icon_desc">Ícone do Menu Lateral</string>
+
+    <string-array name="categories">
+        <item>Todas</item>
+        <item>Historic</item>
+        <item>Cultural</item>
+        <item>Religion</item>
+        <item>Natural</item>
+        <item>Personalizado</item>
+    </string-array>
+</resources>

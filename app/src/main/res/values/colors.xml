@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Pastel Blue Palette - Soft, Clean, and Easy to Read -->
+    <color name="pastel_blue_primary">#A8DADC</color> <!-- Soft Pastel Cyan/Blue -->
+    <color name="pastel_blue_dark">#457B9D</color> <!-- Deep Muted Blue for Primary Text/Buttons -->
+    <color name="pastel_blue_light">#F1FAEE</color> <!-- Soft Off-White/Ice Blue for Backgrounds -->
+    <color name="pastel_blue_accent">#E63946</color> <!-- Clean Pastel Red for contrast/errors -->
+
+    <!-- Compatibility names mapped to Pastel Palette -->
+    <color name="ios_blue">#457B9D</color>
+    <color name="ios_light_blue">#E2EFEF</color>
+    <color name="ios_system_background">#F1FAEE</color>
+    <color name="ios_card_background">#FFFFFF</color>
+
+    <!-- Easy to Read Text Colors (High Contrast with Soft Backgrounds) -->
+    <color name="ios_text_primary">#1D3557</color> <!-- Very Dark Navy Blue (much softer than pure black but highly readable) -->
+    <color name="ios_text_secondary">#457B9D</color> <!-- Deep Blue for subtitles -->
+    <color name="ios_text_label">#627D98</color> <!-- Steel Blue for labels -->
+
+    <color name="ios_separator">#D9E2EC</color>
+    <color name="ios_search_bg">#E2EFEF</color>
+
+    <!-- Original compatibility -->
+    <color name="seed">#457B9D</color>
+    <color name="backgroundLight">#F1FAEE</color>
+    <color name="backgroundDark">#1D3557</color>
+    <color name="black">#1D3557</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="ios_red">#E63946</color>
+    <color name="ios_green">#2A9D8F</color>
+</resources>

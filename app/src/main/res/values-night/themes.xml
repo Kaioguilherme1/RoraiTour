@@ -1,0 +1,7 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.RoraiTour" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/backgroundDark</item>
+    </style>
+
+    <style name="Theme.RoraiTour" parent="Base.Theme.RoraiTour" />
+</resources>
