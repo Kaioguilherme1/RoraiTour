@@ -1,117 +1,80 @@
 # 🗺️ RoraiTour - Seu Guia Turístico Digital
 
-O **RoraiTour** é um aplicativo Android moderno desenvolvido para facilitar a descoberta de pontos turísticos, restaurantes, hotéis e locais históricos no estado de Roraima (e em qualquer lugar do mundo através de geolocalização). O app combina o poder do **Firebase**, **OpenTripMap** e **Wikipedia** para oferecer uma experiência rica em informações com um design limpo e intuitivo.
+O **RoraiTour** é um aplicativo Android robusto e moderno projetado para transformar a experiência de turistas no estado de Roraima e em todo o mundo. Através de um sistema inteligente de geolocalização e integração com múltiplas fontes de dados, o app permite descobrir pontos turísticos, hotéis, restaurantes e locais históricos com descrições ricas e navegação precisa.
 
 ---
 
 ## 🎨 Design e Experiência do Usuário (UX/UI)
-O aplicativo adota uma paleta de cores em **tons pastéis de azul**, focando na legibilidade e no conforto visual:
-- **Tema Claro/Escuro (Day/Night)**: Suporte nativo para modo noturno com inversão inteligente de contraste.
-- **Interface Imersiva**: Mapa em tela cheia com elementos de busca e navegação flutuantes.
-- **Painéis Deslizantes (Bottom Sheets)**: Utilização de componentes Material Design 3 para exibição de listas sem perder o contexto do mapa.
+O aplicativo foi construído seguindo as diretrizes do **Material Design 3**, com foco em elegância e legibilidade:
+- **Paleta Pastel Blue**: Tons suaves de azul para reduzir a fadiga visual.
+- **Tema Dinâmico (Day/Night)**: Suporte nativo ao Modo Escuro, ajustando cores e contrastes automaticamente.
+- **Interface Imersiva**: O mapa ocupa a tela cheia, com elementos de busca e filtros flutuantes.
+- **Painéis Deslizantes (Bottom Sheets)**: Listas de locais que surgem suavemente sem ocultar totalmente o mapa de contexto.
 
 ---
 
 ## 🚀 Funcionalidades Principais
-- **Autenticação Híbrida**: Login via E-mail/Senha e **Google Sign-In**.
-- **Exploração Geoespacial**: Visualização de locais próximos em um mapa interativo (`OSMDroid`).
-- **Busca Inteligente**: Pesquisa por categorias como "Restaurantes", "Hotéis", "Histórico" e "Natureza".
-- **Detalhes Enriquecidos**: Informações históricas extraídas automaticamente da **Wikipedia**.
-- **Favoritos**: Salve seus locais preferidos para acesso offline.
-- **Gerenciamento de Locais**: Adicione seus próprios pontos turísticos personalizados com fotos e descrições.
-- **Navegação**: Integração com Google Maps para traçar rotas até o destino selecionado.
+
+### 1. Autenticação e Perfil Local
+- **Segurança Offline**: Sistema de login e cadastro 100% local utilizando banco de dados SQLite com criptografia de senha (SHA-256).
+- **Gestão de Perfil**: O usuário pode alterar seu nome, atualizar sua senha (com validação da senha atual) e personalizar sua foto de perfil.
+- **Sincronização Visual**: A foto e o nome do usuário são atualizados em tempo real no menu lateral (Navigation Drawer).
+
+### 2. Exploração de Mapas e Geolocalização
+- **Motor de Mapas**: Utiliza a biblioteca **OSMDroid** (OpenStreetMap), oferecendo mapas detalhados sem dependência obrigatória do Google Maps API.
+- **Geolocalização em Tempo Real**: Integração com **Google Play Services (FusedLocationProvider)** para obter a localização exata do usuário com baixo consumo de bateria.
+- **Filtros por Categoria**: Explore locais próximos filtrando por "Natureza", "Cultura", "Histórico", "Religião" ou veja seus próprios lugares personalizados.
+
+### 3. Conteúdo Enriquecido via APIs
+- **OpenTripMap API**: Fornece as coordenadas, categorias e nomes de milhões de locais de interesse ao redor do mundo.
+- **Wikipedia REST API**: O app extrai automaticamente resumos históricos e imagens de alta qualidade da Wikipedia para cada local selecionado.
+- **Navegação Inteligente**: Botão de rota que integra com o Google Maps instalado no dispositivo para traçar o caminho até o destino.
+
+### 4. Personalização e Favoritos
+- **Meus Lugares (CRUD)**: Permite ao usuário cadastrar seus próprios pontos turísticos, incluindo nome, descrição personalizada, latitude, longitude e imagem.
+- **Lista de Favoritos**: Salve locais encontrados no mapa para acesso rápido. Os favoritos aparecem tanto na aba dedicada quanto diretamente no perfil do usuário.
 
 ---
 
-## 🏗️ Arquitetura do Projeto
-O projeto utiliza o padrão **Repository Pattern** em conjunto com a arquitetura baseada em **Activities** e **Models**, garantindo a separação de responsabilidades.
+## 🏗️ Arquitetura Técnica
 
-### Esquema da Arquitetura (Mermaid)
+O projeto adota o **Repository Pattern**, garantindo que a lógica de interface (Activities) seja separada da lógica de dados.
 
-```mermaid
-graph TD
-    subgraph UI_Layer [Camada de Interface]
-        Login[LoginActivity]
-        Main[MainActivity]
-        Detail[DetailActivity]
-        Register[RegisterActivity]
-    end
-
-    subgraph Business_Layer [Camada de Negócio / Repositórios]
-        AuthRepo[AuthLocalRepository]
-        OTMRepo[OpenTripMapRepository]
-        WikiRepo[WikipediaRepository]
-        FavRepo[FavoriteRepository]
-        CustomRepo[CustomPlaceRepository]
-    end
-
-    subgraph Data_Layer [Camada de Dados / APIs]
-        Firebase[Firebase Auth/Firestore]
-        OTM_API[OpenTripMap API]
-        Wiki_API[Wikipedia REST API]
-        SQLite[SQLite / SharedPreferences Local]
-    end
-
-    %% Relacionamentos
-    UI_Layer --> Business_Layer
-    Business_Layer --> Data_Layer
-    Main --> OTMRepo
-    Detail --> WikiRepo
-    Detail --> FavRepo
-    Login --> AuthRepo
-    AuthRepo --> Firebase
-```
+### Componentes Principais:
+- **Activities**: `MainActivity` (Mapa/Busca), `ProfileActivity` (Gestão de conta e favoritos), `DetailActivity` (Dados das APIs).
+- **Repositories**: `AuthLocalRepository` (SQLite), `OpenTripMapRepository` (Retrofit), `WikipediaRepository` (Retrofit), `FavoriteRepository`.
+- **Database**: SQLite gerenciado pela classe `DatabaseHelper`, versão 3.
 
 ---
 
-## 📁 Estrutura de Arquivos Principal
+## 🛠️ Stack de Tecnologias
 
-| Diretório/Arquivo | Descrição |
-| :--- | :--- |
-| `activities/` | Telas do sistema (Login, Home, Detalhes, Cadastro). |
-| `adapters/` | Adaptadores para RecyclerView (Listas de locais e favoritos). |
-| `models/ modelagem de dados (TouristPlace, User, etc). |
-| `repositories/` | Lógica de acesso a dados (APIs e Banco Local). |
-| `api/` | Configurações do Retrofit e interfaces das APIs externas. |
-| `utils/` | Classes utilitárias (Carregamento de imagem, Conectividade, Configurações). |
-| `res/layout/` | Arquivos XML de interface com design responsivo. |
-| `res/values-night/` | Definições de cores para suporte ao Modo Escuro. |
-
----
-
-## 🛠️ Tecnologias Utilizadas
-- **Linguagem**: Java (Android SDK)
-- **Banco de Dados**: Firebase Firestore & SQLite
-- **APIs de Terceiros**: 
-  - OpenTripMap (Dados geográficos)
-  - Wikipedia (Descrições e Imagens)
-- **Bibliotecas**:
-  - `Retrofit 2` & `Gson` (Consumo de APIs)
-  - `Glide 4` (Processamento e Cache de Imagens)
-  - `OSMDroid` (Mapas OpenStreetMap)
-  - `Google Play Services` (Localização e Auth)
+- **Linguagem**: Java 11 (Android SDK).
+- **Rede**: `Retrofit 2` & `Gson` para consumo de APIs JSON.
+- **Imagens**: `Glide 4` para carregamento assíncrono, processamento circular e cache de imagens.
+- **Mapas**: `OSMDroid` 6.1.20.
+- **Localização**: `play-services-location`.
+- **Persistência**: `SQLite` & `SharedPreferences`.
 
 ---
 
 ## ⚙️ Como Configurar o Projeto
 
-1. **Firebase**:
-   - Crie um projeto no Console do Firebase.
-   - Adicione seu arquivo `google-services.json` na pasta `/app`.
-   - Certifique-se de registrar a chave **SHA-1** do seu ambiente nas configurações do projeto para habilitar o Google Sign-In.
-
-2. **Chaves de API**:
+1. **Chaves de API**:
    - Obtenha uma chave gratuita em [OpenTripMap](https://opentripmap.io/).
    - Insira sua chave no arquivo `src/main/java/com/example/roraitour/utils/AppConfig.java`.
 
-3. **Compilação**:
-   - Utilize o Android Studio para sincronizar o Gradle.
-   - Execute o comando `./gradlew clean build` para garantir uma instalação limpa.
+2. **Compilação**:
+   - Abra o projeto no Android Studio.
+   - Sincronize o Gradle (`Sync Project with Gradle Files`).
+   - Execute o app em um emulador ou dispositivo físico com GPS ativado.
 
 ---
 
-## ✒️ Autor
-Desenvolvido por **Kaio Guilherme** como parte do projeto de Desenvolvimento Mobile - 8° Semestre.
+## ✒️ Autores
+Desenvolvido como projeto acadêmico de Desenvolvimento Mobile por:
+- **Kaio Guilherme**
+- **Wandressa Reis**
 
 ---
-*Este projeto foi otimizado para oferecer alta performance e baixo consumo de dados, utilizando técnicas de cache e carregamento assíncrono.*
+*Este aplicativo foi desenvolvido de forma independente, focando em performance, privacidade (dados locais) e riqueza de informações turísticas.*

@@ -98,22 +98,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonGoogle"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/sign_in_with_google"
-            android:textAllCaps="false"
-            android:textColor="@color/ios_text_primary"
-            android:textSize="15sp"
-            app:cornerRadius="16dp"
-            app:icon="@android:drawable/btn_star"
-            app:iconGravity="textStart"
-            app:iconTint="@color/pastel_blue_dark"
-            app:strokeColor="@color/pastel_blue_primary" />
-
         <TextView
             android:id="@+id/textRegister"
             android:layout_width="wrap_content"

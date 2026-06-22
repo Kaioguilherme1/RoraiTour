@@ -14,15 +14,16 @@ public final class ImageLoader {
 
     public static void load(ImageView imageView, String url) {
         if (url == null || url.isEmpty()) {
-            imageView.setImageResource(R.drawable.ic_image_placeholder);
+            imageView.setImageResource(R.mipmap.ic_launcher_round);
             return;
         }
 
         Glide.with(imageView.getContext())
                 .load(url)
-                .placeholder(R.drawable.ic_image_placeholder)
-                .error(R.drawable.ic_image_placeholder)
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .placeholder(R.mipmap.ic_launcher_round)
+                .error(R.mipmap.ic_launcher_round)
+                .diskCacheStrategy(DiskCacheStrategy.NONE) // Desabilitar cache para imagens locais de perfil
+                .skipMemoryCache(true)
                 .centerCrop()
                 .into(imageView);
     }
@@ -35,4 +36,3 @@ public final class ImageLoader {
                 .preload();
     }
 }
-

@@ -50,6 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "name TEXT,"
                 + "email TEXT UNIQUE,"
                 + "password_hash TEXT,"
+                + "profile_image TEXT,"
                 + "created_at TEXT"
                 + ")");
     }

@@ -7,20 +7,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.example.roraitour.databinding.ActivityRegisterBinding;
-import com.example.roraitour.models.User;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import com.example.roraitour.repositories.AuthLocalRepository;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private ActivityRegisterBinding binding;
-    private FirebaseAuth auth;
-    private FirebaseFirestore firestore;
+    private AuthLocalRepository localAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +21,7 @@ public class RegisterActivity extends AppCompatActivity {
         binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        auth = FirebaseAuth.getInstance();
-        firestore = FirebaseFirestore.getInstance();
+        localAuth = new AuthLocalRepository(this);
 
         binding.buttonRegister.setOnClickListener(v -> register());
         binding.textLogin.setOnClickListener(v -> finish());
@@ -58,34 +50,17 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
-        auth.createUserWithEmailAndPassword(email, password)
-                .addOnSuccessListener(authResult -> {
-                    String uid = authResult.getUser() != null ? authResult.getUser().getUid() : "";
-                    String createdAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
-                    User user = new User(uid, name, email, createdAt);
-                    firestore.collection("users").document(uid).set(user)
-                            .addOnSuccessListener(unused -> {
-                                // Save local copy
-                                new Thread(() -> new com.example.roraitour.repositories.AuthLocalRepository(RegisterActivity.this)
-                                        .saveUser(uid, name, email, password)).start();
-
-                                Toast.makeText(this, "Cadastro realizado", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(this, MainActivity.class));
-                                finishAffinity();
-                            })
-                            .addOnFailureListener(e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show());
-                })
-                .addOnFailureListener(e -> {
-                    // If Firebase fails, fall back to local registration
-                    new Thread(() -> {
-                        new com.example.roraitour.repositories.AuthLocalRepository(RegisterActivity.this).saveUser("", name, email, password);
-                        runOnUiThread(() -> {
-                            Toast.makeText(this, "Cadastro local realizado (offline)", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(this, MainActivity.class));
-                            finishAffinity();
-                        });
-                    }).start();
-                });
+        new Thread(() -> {
+            long result = localAuth.saveUser(java.util.UUID.randomUUID().toString(), name, email, password);
+            runOnUiThread(() -> {
+                if (result != -1) {
+                    Toast.makeText(this, "Cadastro realizado", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(this, MainActivity.class));
+                    finishAffinity();
+                } else {
+                    Toast.makeText(this, "Erro ao realizar cadastro", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }).start();
     }
 }
-

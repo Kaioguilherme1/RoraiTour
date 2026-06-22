@@ -1,11 +1,14 @@
 package com.example.roraitour.activities;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -20,7 +23,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;
 import com.example.roraitour.R;
 import com.example.roraitour.adapters.TouristPlaceAdapter;
 import com.example.roraitour.databinding.ActivityMainBinding;
@@ -60,6 +62,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
 
+    private final ActivityResultLauncher<Intent> profileLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    updateNavHeader();
+                }
+            });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Configuration.getInstance().load(this, getSharedPreferences("osmdroid", MODE_PRIVATE));
 
         setupToolbarAndDrawer();
+        updateNavHeader();
         setupRecycler();
         setupSearchAndFilter();
 
@@ -85,6 +95,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setupToolbarAndDrawer() {
         binding.buttonMenu.setOnClickListener(v -> binding.drawerLayout.openDrawer(GravityCompat.START));
         binding.navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void updateNavHeader() {
+        android.view.View headerView = binding.navigationView.getHeaderView(0);
+        android.widget.ImageView imgProfile = headerView.findViewById(R.id.imageHeaderProfile);
+        android.widget.TextView txtName = headerView.findViewById(R.id.textHeaderName);
+        android.widget.TextView txtEmail = headerView.findViewById(R.id.textHeaderEmail);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String name = prefs.getString("local_user_name", getString(R.string.app_name));
+        String email = prefs.getString("local_user_email", getString(R.string.nav_subtitle));
+        String image = prefs.getString("local_user_image", null);
+
+        txtName.setText(name);
+        txtEmail.setText(email);
+        if (image != null) {
+            ImageLoader.load(imgProfile, image);
+        }
     }
 
     private void setupRecycler() {
@@ -316,12 +344,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_my_places) {
             startActivity(new Intent(this, MyPlacesActivity.class));
         } else if (id == R.id.nav_profile) {
-            startActivity(new Intent(this, ProfileActivity.class));
+            profileLauncher.launch(new Intent(this, ProfileActivity.class));
         } else if (id == R.id.nav_logout) {
-            // Sign out both Firebase and local session
-            try {
-                FirebaseAuth.getInstance().signOut();
-            } catch (Exception ignored) {}
+            // Sign out local session
             new com.example.roraitour.repositories.AuthLocalRepository(this).setLoggedOut();
             Intent intent = new Intent(this, LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -331,4 +356,3 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 }
-

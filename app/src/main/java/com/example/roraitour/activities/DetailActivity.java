@@ -98,10 +98,14 @@ public class DetailActivity extends AppCompatActivity {
         boolean isFavorite = favoriteRepository.isFavorite(place.getXid(), place.getDisplayName());
         if (isFavorite) {
             favoriteRepository.deleteByPlace(place);
-            Toast.makeText(this, R.string.removed_from_favorites, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Removido dos favoritos", Toast.LENGTH_SHORT).show();
         } else {
-            favoriteRepository.save(place);
-            Toast.makeText(this, R.string.added_to_favorites, Toast.LENGTH_SHORT).show();
+            long id = favoriteRepository.save(place);
+            if (id != -1) {
+                Toast.makeText(this, "Adicionado aos favoritos!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Erro ao favoritar", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
