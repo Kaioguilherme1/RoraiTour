@@ -5,23 +5,33 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.roraitour.R;
 import com.example.roraitour.adapters.TouristPlaceAdapter;
 import com.example.roraitour.databinding.ActivityProfileBinding;
+import com.example.roraitour.models.TouristPlace;
 import com.example.roraitour.repositories.AuthLocalRepository;
 import com.example.roraitour.repositories.FavoriteRepository;
 import com.example.roraitour.utils.Constants;
 import com.example.roraitour.utils.ImageLoader;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -30,6 +40,7 @@ public class ProfileActivity extends AppCompatActivity {
     private FavoriteRepository favoriteRepository;
     private String userEmail;
     private TouristPlaceAdapter favoritesAdapter;
+    private Uri cameraImageUri;
 
     private final ActivityResultLauncher<Intent> pickImageLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -44,6 +55,26 @@ public class ProfileActivity extends AppCompatActivity {
                         }
                         updatePhoto(uri.toString());
                     }
+                }
+            }
+    );
+
+    private final ActivityResultLauncher<Uri> takePhotoLauncher = registerForActivityResult(
+            new ActivityResultContracts.TakePicture(),
+            result -> {
+                if (result && cameraImageUri != null) {
+                    updatePhoto(cameraImageUri.toString());
+                }
+            }
+    );
+
+    private final ActivityResultLauncher<String> cameraPermissionLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            isGranted -> {
+                if (isGranted) {
+                    launchCamera();
+                } else {
+                    Toast.makeText(this, R.string.camera_permission_denied, Toast.LENGTH_SHORT).show();
                 }
             }
     );
@@ -69,6 +100,8 @@ public class ProfileActivity extends AppCompatActivity {
             intent.setType("image/*");
             pickImageLauncher.launch(intent);
         });
+
+        binding.buttonTakePhoto.setOnClickListener(v -> cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA));
 
         binding.buttonUpdateName.setOnClickListener(v -> updateName());
         binding.buttonUpdatePassword.setOnClickListener(v -> updatePassword());
@@ -106,11 +139,36 @@ public class ProfileActivity extends AppCompatActivity {
         }).start();
     }
 
+    private void launchCamera() {
+        try {
+            File photoFile = createImageFile();
+            cameraImageUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", photoFile);
+            takePhotoLauncher.launch(cameraImageUri);
+        } catch (IOException e) {
+            Toast.makeText(this, R.string.image_file_error, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(imageFileName, ".jpg", storageDir);
+    }
+
     private void setupFavorites() {
-        favoritesAdapter = new TouristPlaceAdapter(place -> {
-            Intent intent = new Intent(this, DetailActivity.class);
-            intent.putExtra(Constants.EXTRA_PLACE, place);
-            startActivity(intent);
+        favoritesAdapter = new TouristPlaceAdapter(new TouristPlaceAdapter.OnPlaceClickListener() {
+            @Override
+            public void onPlaceClick(TouristPlace place) {
+                Intent intent = new Intent(ProfileActivity.this, DetailActivity.class);
+                intent.putExtra(Constants.EXTRA_PLACE, place);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onVisitedChange(TouristPlace place, boolean isVisited) {
+                favoriteRepository.updateVisited(place.getXid(), place.getDisplayName(), isVisited);
+            }
         });
         binding.recyclerFavorites.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerFavorites.setAdapter(favoritesAdapter);
@@ -118,9 +176,9 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void loadFavorites() {
         new Thread(() -> {
-            ArrayList<com.example.roraitour.models.TouristPlace> list = new ArrayList<>();
+            ArrayList<TouristPlace> list = new ArrayList<>();
             for (com.example.roraitour.models.FavoritePlace fav : favoriteRepository.getAll()) {
-                com.example.roraitour.models.TouristPlace p = new com.example.roraitour.models.TouristPlace();
+                TouristPlace p = new TouristPlace();
                 p.setXid(fav.getXid());
                 p.setName(fav.getName());
                 p.setCategory(fav.getCategory());
@@ -129,6 +187,7 @@ public class ProfileActivity extends AppCompatActivity {
                 p.setImage(fav.getImage());
                 p.setDescription(fav.getDescription());
                 p.setDistance(fav.getDistance());
+                p.setVisited(fav.isVisited());
                 list.add(p);
             }
             runOnUiThread(() -> favoritesAdapter.submitList(list));

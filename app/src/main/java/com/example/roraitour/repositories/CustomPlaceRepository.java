@@ -35,6 +35,13 @@ public class CustomPlaceRepository {
         return db.delete(DatabaseHelper.TABLE_CUSTOM, "id = ?", new String[]{String.valueOf(id)});
     }
 
+    public void updateVisited(int id, boolean visited) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("is_visited", visited ? 1 : 0);
+        db.update(DatabaseHelper.TABLE_CUSTOM, values, "id = ?", new String[]{String.valueOf(id)});
+    }
+
     public CustomPlace getById(int id) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_CUSTOM + " WHERE id = ?", new String[]{String.valueOf(id)});
@@ -67,6 +74,7 @@ public class CustomPlaceRepository {
         values.put("image", place.getImage());
         values.put("history", place.getHistory());
         values.put("created_at", place.getCreatedAt());
+        values.put("is_visited", place.isVisited() ? 1 : 0);
         return values;
     }
 
@@ -81,6 +89,7 @@ public class CustomPlaceRepository {
         place.setImage(cursor.getString(cursor.getColumnIndexOrThrow("image")));
         place.setHistory(cursor.getString(cursor.getColumnIndexOrThrow("history")));
         place.setCreatedAt(cursor.getString(cursor.getColumnIndexOrThrow("created_at")));
+        place.setVisited(cursor.getInt(cursor.getColumnIndexOrThrow("is_visited")) == 1);
         return place;
     }
 }

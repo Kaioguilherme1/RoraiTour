@@ -24,10 +24,18 @@ public class MyPlacesActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         repository = new CustomPlaceRepository(this);
-        adapter = new CustomPlaceAdapter(place -> {
-            Intent intent = new Intent(this, EditPlaceActivity.class);
-            intent.putExtra(Constants.EXTRA_CUSTOM_PLACE_ID, place.getId());
-            startActivity(intent);
+        adapter = new CustomPlaceAdapter(new CustomPlaceAdapter.OnCustomPlaceClickListener() {
+            @Override
+            public void onClick(com.example.roraitour.models.CustomPlace place) {
+                Intent intent = new Intent(MyPlacesActivity.this, EditPlaceActivity.class);
+                intent.putExtra(Constants.EXTRA_CUSTOM_PLACE_ID, place.getId());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onVisitedChange(com.example.roraitour.models.CustomPlace place, boolean isVisited) {
+                repository.updateVisited(place.getId(), isVisited);
+            }
         });
 
         binding.recyclerMyPlaces.setLayoutManager(new LinearLayoutManager(this));

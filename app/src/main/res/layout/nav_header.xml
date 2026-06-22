@@ -36,4 +36,13 @@
         android:text="@string/nav_subtitle"
         android:textColor="#CCFFFFFF"
         android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/textBattery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/battery_level"
+        android:textColor="#99FFFFFF"
+        android:textSize="12sp" />
 </LinearLayout>

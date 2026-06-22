@@ -23,15 +23,30 @@
             app:strokeColor="@color/ios_blue"
             app:strokeWidth="2dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonChangePhoto"
-            style="@style/Widget.Material3.Button.TextButton"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="Alterar Foto de Perfil"
-            android:textAllCaps="false"
-            android:textColor="@color/ios_blue" />
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonChangePhoto"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/gallery"
+                android:textAllCaps="false"
+                android:textColor="@color/ios_blue" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonTakePhoto"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/camera"
+                android:textAllCaps="false"
+                android:textColor="@color/ios_blue" />
+        </LinearLayout>
 
         <!-- Nome Section -->
         <com.google.android.material.card.MaterialCardView

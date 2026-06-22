@@ -23,6 +23,7 @@ public class TouristPlaceAdapter extends RecyclerView.Adapter<TouristPlaceAdapte
 
     public interface OnPlaceClickListener {
         void onPlaceClick(TouristPlace place);
+        default void onVisitedChange(TouristPlace place, boolean isVisited) {}
     }
 
     private final OnPlaceClickListener listener;
@@ -69,6 +70,14 @@ public class TouristPlaceAdapter extends RecyclerView.Adapter<TouristPlaceAdapte
         holder.category.setText(place.getCategory());
         holder.distance.setText(holder.itemView.getContext().getString(R.string.distance_km, place.getDistance() / 1000d));
         ImageLoader.load(holder.image, place.getImage());
+        
+        holder.checkVisited.setOnCheckedChangeListener(null);
+        holder.checkVisited.setChecked(place.isVisited());
+        holder.checkVisited.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            place.setVisited(isChecked);
+            listener.onVisitedChange(place, isChecked);
+        });
+
         holder.itemView.setOnClickListener(v -> listener.onPlaceClick(place));
     }
 
@@ -115,6 +124,7 @@ public class TouristPlaceAdapter extends RecyclerView.Adapter<TouristPlaceAdapte
         TextView name;
         TextView category;
         TextView distance;
+        android.widget.CheckBox checkVisited;
 
         PlaceViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -122,6 +132,7 @@ public class TouristPlaceAdapter extends RecyclerView.Adapter<TouristPlaceAdapte
             name = itemView.findViewById(R.id.textName);
             category = itemView.findViewById(R.id.textCategory);
             distance = itemView.findViewById(R.id.textDistance);
+            checkVisited = itemView.findViewById(R.id.checkVisited);
         }
     }
 }

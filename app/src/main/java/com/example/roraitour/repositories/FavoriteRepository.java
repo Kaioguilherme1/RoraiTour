@@ -30,7 +30,15 @@ public class FavoriteRepository {
         values.put("image", place.getImage());
         values.put("description", place.getDescription());
         values.put("distance", place.getDistance());
+        values.put("is_visited", place.isVisited() ? 1 : 0);
         return db.insert(DatabaseHelper.TABLE_FAVORITE, null, values);
+    }
+
+    public void updateVisited(String xid, String name, boolean visited) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("is_visited", visited ? 1 : 0);
+        db.update(DatabaseHelper.TABLE_FAVORITE, values, "xid = ? OR name = ?", new String[]{xid == null ? "" : xid, name});
     }
 
     public boolean isFavorite(String xid, String name) {
@@ -68,6 +76,7 @@ public class FavoriteRepository {
             place.setImage(cursor.getString(cursor.getColumnIndexOrThrow("image")));
             place.setDescription(cursor.getString(cursor.getColumnIndexOrThrow("description")));
             place.setDistance(cursor.getDouble(cursor.getColumnIndexOrThrow("distance")));
+            place.setVisited(cursor.getInt(cursor.getColumnIndexOrThrow("is_visited")) == 1);
             places.add(place);
         }
         cursor.close();

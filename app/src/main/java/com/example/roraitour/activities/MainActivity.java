@@ -3,9 +3,11 @@ package com.example.roraitour.activities;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FusedLocationProviderClient fusedLocationProviderClient;
     private OpenTripMapRepository openTripMapRepository;
     private CustomPlaceRepository customPlaceRepository;
+    private com.example.roraitour.repositories.FavoriteRepository favoriteRepository;
     private Location lastKnownLocation;
 
     private final ActivityResultLauncher<String[]> permissionLauncher =
@@ -85,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         openTripMapRepository = new OpenTripMapRepository(this);
         customPlaceRepository = new CustomPlaceRepository(this);
+        favoriteRepository = new com.example.roraitour.repositories.FavoriteRepository(this);
 
         binding.mapView.setTileSource(TileSourceFactory.MAPNIK);
         binding.mapView.setMultiTouchControls(true);
@@ -102,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         android.widget.ImageView imgProfile = headerView.findViewById(R.id.imageHeaderProfile);
         android.widget.TextView txtName = headerView.findViewById(R.id.textHeaderName);
         android.widget.TextView txtEmail = headerView.findViewById(R.id.textHeaderEmail);
+        android.widget.TextView txtBattery = headerView.findViewById(R.id.textBattery);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String name = prefs.getString("local_user_name", getString(R.string.app_name));
@@ -113,13 +118,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (image != null) {
             ImageLoader.load(imgProfile, image);
         }
+
+        // Check Battery
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = registerReceiver(null, ifilter);
+        if (batteryStatus != null) {
+            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            float batteryPct = level * 100 / (float) scale;
+            txtBattery.setText(getString(R.string.battery_level, (int) batteryPct));
+        }
     }
 
     private void setupRecycler() {
-        adapter = new TouristPlaceAdapter(place -> {
-            Intent intent = new Intent(this, DetailActivity.class);
-            intent.putExtra(Constants.EXTRA_PLACE, place);
-            startActivity(intent);
+        adapter = new TouristPlaceAdapter(new TouristPlaceAdapter.OnPlaceClickListener() {
+            @Override
+            public void onPlaceClick(TouristPlace place) {
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                intent.putExtra(Constants.EXTRA_PLACE, place);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onVisitedChange(TouristPlace place, boolean isVisited) {
+                if (place.isCustom()) {
+                    customPlaceRepository.updateVisited(place.getId(), isVisited);
+                } else {
+                    favoriteRepository.updateVisited(place.getXid(), place.getDisplayName(), isVisited);
+                }
+            }
         });
         binding.recyclerPlaces.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerPlaces.setAdapter(adapter);
@@ -315,6 +342,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             tourist.setImage(custom.getImage());
             tourist.setDescription(custom.getHistory());
             tourist.setDistance(0);
+            tourist.setVisited(custom.isVisited());
             result.add(tourist);
         }
         return result;

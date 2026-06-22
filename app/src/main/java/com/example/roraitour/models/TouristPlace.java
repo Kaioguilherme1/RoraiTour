@@ -13,6 +13,7 @@ public class TouristPlace implements Serializable {
     private double distance;
     private String description;
     private boolean custom;
+    private boolean visited;
 
     public TouristPlace() {
     }
@@ -99,6 +100,14 @@ public class TouristPlace implements Serializable {
 
     public void setCustom(boolean custom) {
         this.custom = custom;
+    }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean visited) {
+        this.visited = visited;
     }
 }
 

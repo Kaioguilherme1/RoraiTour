@@ -10,6 +10,7 @@ public class FavoritePlace {
     private String image;
     private String description;
     private double distance;
+    private boolean visited;
 
     public FavoritePlace() {
     }
@@ -84,6 +85,14 @@ public class FavoritePlace {
 
     public void setDistance(double distance) {
         this.distance = distance;
+    }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean visited) {
+        this.visited = visited;
     }
 }
 

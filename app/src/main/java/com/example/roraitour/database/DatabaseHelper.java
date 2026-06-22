@@ -28,7 +28,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "longitude REAL,"
                 + "image TEXT,"
                 + "description TEXT,"
-                + "distance REAL"
+                + "distance REAL,"
+                + "is_visited INTEGER DEFAULT 0"
                 + ")");
 
         db.execSQL("CREATE TABLE " + TABLE_CUSTOM + " ("
@@ -40,7 +41,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + "longitude REAL,"
                 + "image TEXT,"
                 + "history TEXT,"
-                + "created_at TEXT"
+                + "created_at TEXT,"
+                + "is_visited INTEGER DEFAULT 0"
                 + ")");
 
         // Users table for local authentication (email + hashed password)

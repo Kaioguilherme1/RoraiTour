@@ -55,6 +55,15 @@
                 android:textSize="13sp" />
         </LinearLayout>
 
+        <CheckBox
+            android:id="@+id/checkVisited"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:buttonTint="@color/ios_blue"
+            android:scaleX="0.9"
+            android:scaleY="0.9" />
+
         <ImageView
             android:layout_width="20dp"
             android:layout_height="20dp"

@@ -10,6 +10,7 @@ public class CustomPlace {
     private String image;
     private String history;
     private String createdAt;
+    private boolean visited;
 
     public CustomPlace() {
     }
@@ -84,6 +85,14 @@ public class CustomPlace {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean visited) {
+        this.visited = visited;
     }
 }
 

@@ -20,6 +20,7 @@ public class CustomPlaceAdapter extends RecyclerView.Adapter<CustomPlaceAdapter.
 
     public interface OnCustomPlaceClickListener {
         void onClick(CustomPlace place);
+        default void onVisitedChange(CustomPlace place, boolean isVisited) {}
     }
 
     private final OnCustomPlaceClickListener listener;
@@ -49,6 +50,14 @@ public class CustomPlaceAdapter extends RecyclerView.Adapter<CustomPlaceAdapter.
         holder.category.setText(place.getCategory());
         holder.description.setText(place.getDescription());
         ImageLoader.load(holder.image, place.getImage());
+
+        holder.checkVisited.setOnCheckedChangeListener(null);
+        holder.checkVisited.setChecked(place.isVisited());
+        holder.checkVisited.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            place.setVisited(isChecked);
+            listener.onVisitedChange(place, isChecked);
+        });
+
         holder.itemView.setOnClickListener(v -> listener.onClick(place));
     }
 
@@ -62,6 +71,7 @@ public class CustomPlaceAdapter extends RecyclerView.Adapter<CustomPlaceAdapter.
         TextView name;
         TextView category;
         TextView description;
+        android.widget.CheckBox checkVisited;
 
         CustomViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,6 +79,7 @@ public class CustomPlaceAdapter extends RecyclerView.Adapter<CustomPlaceAdapter.
             name = itemView.findViewById(R.id.textName);
             category = itemView.findViewById(R.id.textCategory);
             description = itemView.findViewById(R.id.textDescription);
+            checkVisited = itemView.findViewById(R.id.checkVisited);
         }
     }
 }
