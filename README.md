@@ -1,80 +1,153 @@
-# 🗺️ RoraiTour - Seu Guia Turístico Digital
+# 🗺️ Documentação Técnica: RoraiTour
 
-O **RoraiTour** é um aplicativo Android robusto e moderno projetado para transformar a experiência de turistas no estado de Roraima e em todo o mundo. Através de um sistema inteligente de geolocalização e integração com múltiplas fontes de dados, o app permite descobrir pontos turísticos, hotéis, restaurantes e locais históricos com descrições ricas e navegação precisa.
-
----
-
-## 🎨 Design e Experiência do Usuário (UX/UI)
-O aplicativo foi construído seguindo as diretrizes do **Material Design 3**, com foco em elegância e legibilidade:
-- **Paleta Pastel Blue**: Tons suaves de azul para reduzir a fadiga visual.
-- **Tema Dinâmico (Day/Night)**: Suporte nativo ao Modo Escuro, ajustando cores e contrastes automaticamente.
-- **Interface Imersiva**: O mapa ocupa a tela cheia, com elementos de busca e filtros flutuantes.
-- **Painéis Deslizantes (Bottom Sheets)**: Listas de locais que surgem suavemente sem ocultar totalmente o mapa de contexto.
+O **RoraiTour** é uma plataforma Android de exploração turística que integra dados geoespaciais distribuídos para fornecer informações em tempo real sobre pontos de interesse. O sistema foi projetado para operar com alta performance, priorizando a privacidade do usuário através de persistência local e consumo otimizado de APIs REST.
 
 ---
 
-## 🚀 Funcionalidades Principais
+## 🏗️ Arquitetura do Sistema
 
-### 1. Autenticação e Perfil Local
-- **Segurança Offline**: Sistema de login e cadastro 100% local utilizando banco de dados SQLite com criptografia de senha (SHA-256).
-- **Gestão de Perfil**: O usuário pode alterar seu nome, atualizar sua senha (com validação da senha atual) e personalizar sua foto de perfil.
-- **Sincronização Visual**: A foto e o nome do usuário são atualizados em tempo real no menu lateral (Navigation Drawer).
+O projeto utiliza o padrão **Repository Pattern** desacoplado da camada de interface (**Activities**), garantindo manutenibilidade e facilidade de testes.
 
-### 2. Exploração de Mapas e Geolocalização
-- **Motor de Mapas**: Utiliza a biblioteca **OSMDroid** (OpenStreetMap), oferecendo mapas detalhados sem dependência obrigatória do Google Maps API.
-- **Geolocalização em Tempo Real**: Integração com **Google Play Services (FusedLocationProvider)** para obter a localização exata do usuário com baixo consumo de bateria.
-- **Filtros por Categoria**: Explore locais próximos filtrando por "Natureza", "Cultura", "Histórico", "Religião" ou veja seus próprios lugares personalizados.
+### Visão Geral da Arquitetura (Mermaid)
 
-### 3. Conteúdo Enriquecido via APIs
-- **OpenTripMap API**: Fornece as coordenadas, categorias e nomes de milhões de locais de interesse ao redor do mundo.
-- **Wikipedia REST API**: O app extrai automaticamente resumos históricos e imagens de alta qualidade da Wikipedia para cada local selecionado.
-- **Navegação Inteligente**: Botão de rota que integra com o Google Maps instalado no dispositivo para traçar o caminho até o destino.
+```mermaid
+graph TD
+    subgraph UI_Layer [Camada de Apresentação - Activities]
+        MA[MainActivity - Map Engine]
+        PA[ProfileActivity - User Management]
+        DA[DetailActivity - Content Aggregator]
+        LA[LoginActivity - Local Auth]
+    end
 
-### 4. Personalização e Favoritos
-- **Meus Lugares (CRUD)**: Permite ao usuário cadastrar seus próprios pontos turísticos, incluindo nome, descrição personalizada, latitude, longitude e imagem.
-- **Lista de Favoritos**: Salve locais encontrados no mapa para acesso rápido. Os favoritos aparecem tanto na aba dedicada quanto diretamente no perfil do usuário.
+    subgraph Repository_Layer [Camada de Abstração de Dados]
+        AR[AuthLocalRepository]
+        OTMR[OpenTripMapRepository]
+        WR[WikipediaRepository]
+        FR[FavoriteRepository]
+        CPR[CustomPlaceRepository]
+    end
 
----
+    subgraph Data_Source_Layer [Provedores de Dados]
+        REST_OTM[OpenTripMap API - REST/JSON]
+        REST_Wiki[Wikipedia API - REST/JSON]
+        SQLite[(SQLite DB - Local Persistence)]
+        Prefs[SharedPreferences - Session Cache]
+        GPS[FusedLocationProvider - GPS/Network]
+    end
 
-## 🏗️ Arquitetura Técnica
-
-O projeto adota o **Repository Pattern**, garantindo que a lógica de interface (Activities) seja separada da lógica de dados.
-
-### Componentes Principais:
-- **Activities**: `MainActivity` (Mapa/Busca), `ProfileActivity` (Gestão de conta e favoritos), `DetailActivity` (Dados das APIs).
-- **Repositories**: `AuthLocalRepository` (SQLite), `OpenTripMapRepository` (Retrofit), `WikipediaRepository` (Retrofit), `FavoriteRepository`.
-- **Database**: SQLite gerenciado pela classe `DatabaseHelper`, versão 3.
-
----
-
-## 🛠️ Stack de Tecnologias
-
-- **Linguagem**: Java 11 (Android SDK).
-- **Rede**: `Retrofit 2` & `Gson` para consumo de APIs JSON.
-- **Imagens**: `Glide 4` para carregamento assíncrono, processamento circular e cache de imagens.
-- **Mapas**: `OSMDroid` 6.1.20.
-- **Localização**: `play-services-location`.
-- **Persistência**: `SQLite` & `SharedPreferences`.
+    UI_Layer --> Repository_Layer
+    Repository_Layer --> Data_Source_Layer
+```
 
 ---
 
-## ⚙️ Como Configurar o Projeto
+## 🛠️ Stack Tecnológica
 
-1. **Chaves de API**:
-   - Obtenha uma chave gratuita em [OpenTripMap](https://opentripmap.io/).
-   - Insira sua chave no arquivo `src/main/java/com/example/roraitour/utils/AppConfig.java`.
+| Tecnologia | Finalidade | Versão |
+| :--- | :--- | :--- |
+| **Java 11** | Linguagem de desenvolvimento principal. | - |
+| **Android SDK** | Framework base (Target SDK 35). | 35 |
+| **OSMDroid** | Motor de renderização de mapas OpenStreetMap. | 6.1.20 |
+| **Retrofit 2** | Cliente HTTP type-safe para consumo de APIs. | 2.11.0 |
+| **Glide 4** | Framework de carregamento e cache de mídia. | 4.16.0 |
+| **SQLite** | Banco de dados relacional para dados persistentes. | 3 |
+| **FusedLocation** | API do Google Play Services para geolocalização. | 21.3.0 |
 
-2. **Compilação**:
-   - Abra o projeto no Android Studio.
-   - Sincronize o Gradle (`Sync Project with Gradle Files`).
-   - Execute o app em um emulador ou dispositivo físico com GPS ativado.
+---
+
+## 📂 Camada de Persistência (Database)
+
+O aplicativo utiliza um banco de dados **SQLite** local para garantir o funcionamento de funcionalidades críticas em ambientes offline.
+
+```mermaid
+erDiagram
+    USERS {
+        int id PK
+        string uid
+        string name
+        string email UK
+        string password_hash
+        string profile_image
+        string created_at
+    }
+    FAVORITE_PLACES {
+        int id PK
+        string xid
+        string name
+        string category
+        double latitude
+        double longitude
+        string image
+        string description
+    }
+    CUSTOM_PLACES {
+        int id PK
+        string name
+        string description
+        string category
+        double latitude
+        double longitude
+        string image
+    }
+```
+
+---
+
+## 📡 Integrações de API e Dados
+
+### 1. Sistema de Mapas (OSMDroid)
+Diferente do Google Maps tradicional, o RoraiTour utiliza **OSMDroid**, que permite:
+- Renderização de *tiles* via OpenStreetMap (Mapnik).
+- Cache local de mapas para redução de consumo de dados.
+- Manipulação programática de sobreposições (*Overlays*) para marcadores dinâmicos.
+
+### 2. Geolocalização
+Implementado via `FusedLocationProviderClient`, utilizando uma estratégia de fusão entre GPS, Wi-Fi e redes móveis para determinar a posição com precisão sub-métrica e baixo impacto na bateria.
+
+### 3. OpenTripMap API
+Responsável pelo fornecimento de dados geo-referenciados:
+- **Endpoints Utilizados**: Radius (busca por raio) e XID (detalhes específicos).
+- **Filtros**: Implementação de `kinds` para categorização de locais (histórico, cultural, natural).
+
+### 4. Wikipedia REST API
+Utilizada como motor de conhecimento histórico:
+- O app realiza chamadas assíncronas para buscar `extracts` (resumos) e `originalimage` baseando-se no nome do local retornado pelo OpenTripMap.
+
+---
+
+## 🔐 Fluxo de Autenticação e Segurança
+
+O sistema de segurança não depende de servidores externos para validação de identidade:
+
+1.  **Criptografia**: As senhas nunca são armazenadas em texto plano. É utilizado **SHA-256** para gerar o hash antes da gravação no SQLite.
+2.  **Sessão**: Gerenciada via `AuthLocalRepository` que sincroniza o estado entre o banco de dados e `SharedPreferences` para acesso rápido durante o *Splash*.
+3.  **Permissões de Mídia**: Utiliza `ACTION_OPEN_DOCUMENT` com `takePersistableUriPermission` para garantir que as fotos de perfil persistam mesmo após o reinício do sistema operacional.
+
+---
+
+## 🏗️ Estrutura de Pacotes
+
+```text
+com.example.roraitour
+├── activities      # Controladores de interface (Activities/Context)
+├── adapters        # Lógica de vinculação de dados para Listas (RecyclerView)
+├── api             # Definições de interfaces Retrofit e modelos POJO de resposta
+├── database        # Configuração do SQLite e DatabaseHelper
+├── models          # Entidades de dados (Domain Objects)
+├── repositories    # Camada de lógica de dados e regras de negócio
+└── utils           # Classes auxiliares (ImageLoader, Network, Constants)
+```
+
+---
+
+## ⚙️ Procedimentos de Build
+
+1.  **Configuração de API**: Insira a chave do OpenTripMap no arquivo `AppConfig.java`.
+2.  **Gradle**: Execute `./gradlew assembleDebug` para gerar o artefato de desenvolvimento.
+3.  **Requisitos**: Dispositivo Android com API 26 (Android 8.0) ou superior.
 
 ---
 
 ## ✒️ Autores
-Desenvolvido como projeto acadêmico de Desenvolvimento Mobile por:
-- **Kaio Guilherme**
-- **Wandressa Reis**
-
----
-*Este aplicativo foi desenvolvido de forma independente, focando em performance, privacidade (dados locais) e riqueza de informações turísticas.*
+- **Kaio Guilherme** - Desenvolvimento de Backend/API Integrations
+- **Wandressa Reis** - UI/UX Design e Camada de Persistência Local
